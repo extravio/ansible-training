@@ -7,6 +7,13 @@
     db_service: mariadb
 
   tasks:
+  - name: Check local time
+    ansible.builtin.command: date
+    register: command_result
+  - name: Print local time
+    ansible.builtin.debug:
+      var: command_result.stdou
+
   - name: Attempt to set up a webserver
     block:
     - name: Install {{ web_package }} package
