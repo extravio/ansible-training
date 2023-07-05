@@ -33,27 +33,27 @@
 
   - name: The {{ web_config_dst }} file has been deployed
     ansible.builtin.copy: 
-      name: "{{ web_config_src }}"
-      state: "{{ web_config_dst }}"
+      src: "{{ web_config_src }}"
+      dest: "{{ web_config_dst }}"
       force: true
     notify: 
     - restart web service
 
   - name: The {{ app_config_dst }} file has been deployed
     ansible.builtin.copy:
-    src: "{{ app_config_src }}"
-    dest: "{{ app_config_dst }}"
-    force: true
+      src: "{{ app_config_src }}"
+      dest: "{{ app_config_dst }}"
+      force: true
     notify:
     - restart app service
 
   handlers:
   - name: restart web service
     ansible.builtin.service:
-    name: "{{ web_service }}"
-    state: restarted
+      name: "{{ web_service }}"
+      state: restarted
 
   - name: restart app service
     ansible.builtin.service:
-    name: "{{ app_service }}"
-    state: restarted
+      name: "{{ app_service }}"
+      state: restarted
