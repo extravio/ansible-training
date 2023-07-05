@@ -1,0 +1,8 @@
+packages:
+- httpd
+- firewalld
+- python-PyMySQL
+services: 
+- httpd
+- firewalld
+rule: http

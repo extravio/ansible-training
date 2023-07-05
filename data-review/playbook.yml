@@ -1,0 +1,89 @@
+---
+- name: Deploy and start Apache HTTPD service 
+  hosts: webserver
+  become: true
+  vars_files: 
+  - vars.yml
+
+  tasks:
+  - name: Required packages installed
+    ansible.builtin.dnf:
+      name: "{{ packages }}" 
+      state: latest
+  
+  - name: Http conf
+    ansible.builtin.copy:
+      src: "{{ httpdconf.src }}"
+      dest: "{{ httpdconf.dest }}"
+      mode: 0644
+      owner: root
+      group: root
+
+  - name: Create secrets directory
+    ansible.builtin.file:
+      path: "{{ secrets.dir }}"
+      state: directory
+      mode: 0500
+      owner: apache
+      group: apache
+      recurse: true
+
+  - name: Copy secrets
+    ansible.builtin.copy:
+      src: "{{ secrets.src }}"
+      dest: "{{ secrets.dest }}"
+      mode: 0400
+      owner: apache
+      group: apache
+  
+  - name: Copy htaccess
+    ansible.builtin.copy:
+      src: "{{ htaccess.src }}"
+      dest: "{{ web_root }}/.htaccess"
+      mode: 0400
+      owner: apache
+      group: apache
+
+  - name: Create web content
+    ansible.builtin.copy:
+      content: "{{ ansible_facts.fqdn }} ({{ ansible_facts.default_ipv4.address  }})"
+      dest: "{{ web_root }}/index.html"
+
+  - name: Services enabled and running
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: true
+    loop: "{{ services }}"
+  
+  - name: Firewall port for https open
+    ansible.posix.firewalld:
+      service: https
+      permanent: true
+      state: enabled
+      immediate: true
+
+
+- name: Verify Apache service
+  hosts: webserver
+  gather_facts: false
+  become: false
+  vars: 
+    web_user: guest
+  vars_files: vars/secret.yml
+  tasks:
+  - name: Connect to web server
+    ansible.builtin.uri:
+      url: https://serverb.lab.example.com
+      force_basic_auth: true
+      user: "{{ web_user }}"
+      password: "{{ web_pass }}"
+      validate_certs: false
+      status_code: 200
+      return_content: true
+    register: auth_test
+    delegate_to: workstation
+
+  - name: Debug
+    debug: 
+      variable: auth_test
