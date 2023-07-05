@@ -10,9 +10,11 @@
   - name: Check local time
     ansible.builtin.command: date
     register: command_result
+    changed_when: false
+
   - name: Print local time
     ansible.builtin.debug:
-      var: command_result.stdou
+      var: command_result.stdout
 
   - name: Attempt to set up a webserver
     block:
@@ -20,6 +22,7 @@
       ansible.builtin.dnf:
         name: "{{ web_package }}"
         state: present
+      failed_when: webpackage == "httpd"
     rescue:
     - name: Install {{ db_package }} package
       ansible.builtin.dnf:
