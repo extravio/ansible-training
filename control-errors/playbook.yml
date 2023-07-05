@@ -2,7 +2,7 @@
 - name: Task Failure Exercise
   hosts: databases
   vars:
-    web_package: http
+    web_package: httpd
     db_package: mariadb-server
     db_service: mariadb
 
@@ -17,7 +17,7 @@
     - name: Install {{ db_package }} package
       ansible.builtin.dnf:
         name: "{{ db_package }}"
-      state: present
+        state: present
     always:
     - name: Start {{ db_service }} service
       ansible.builtin.service:
