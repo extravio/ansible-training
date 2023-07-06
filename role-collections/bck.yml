@@ -6,12 +6,12 @@
 
   tasks:
     - name: Ensure the machine is up
-      FIXME:
+      gls.utils.newping:
         data: pong
 
     - name: Ensure configuration files are saved
       include_role:
-        name: #FIXME#
+        name: gls.utils.backup
       vars:
         backup_id: backup_etc
         backup_files:
