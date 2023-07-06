@@ -2,5 +2,5 @@
 # requirements.yml
 - src: git@workstation.lab.example.com:student/bash_env
   scm: git
-  version: main
+  version: dev
   name: student.bash_env

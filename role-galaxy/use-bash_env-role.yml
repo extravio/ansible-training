@@ -2,6 +2,7 @@
 - name: Use student.bash_env role playbook
   hosts: devservers
   vars:
+    prompt_color: blue
     default_prompt: '[\u on \h in \W dir]\$ '
  
   pre_tasks:
